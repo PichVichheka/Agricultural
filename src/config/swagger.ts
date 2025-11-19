@@ -13,8 +13,18 @@ const options: swaggerJSDoc.Options = {
         url: 'http://localhost:5000',
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT', // optional, only for display in Swagger UI
+        },
+      },
+    },
+    security: [], // global security (optional)
   },
-  apis: ['./src/routes/*.ts'], // files containing Swagger annotations
+  apis: ['./src/routes/*.ts'], // your route files with swagger comments
 };
 
 const swaggerSpec = swaggerJSDoc(options);
