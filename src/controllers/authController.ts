@@ -1,29 +1,47 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser, logoutUser } from "../service/authService";
+import {
+  registerUser,
+  loginUser,
+  addRolesToUser,
+  logoutUser,
+} from "../service/authService";
+import { IRegisterInput, ILoginInput } from "../types/authType";
+
 
 export const registerController = async (req: Request, res: Response) => {
   try {
-    const result = await registerUser(req);
-    return res.status(result.status).json(result.body);
+    const input: IRegisterInput = req.body;
+    const result = await registerUser(input);
+    return res.status(201).json({ success: true, data: result });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
+
 export const loginController = async (req: Request, res: Response) => {
   try {
-    const result = await loginUser(req);
-    return res.status(result.status).json(result.body);
+    const input: ILoginInput = req.body;
+    const result = await loginUser(input);
+    return res.status(200).json({ success: true, data: result });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+
+export const addRolesController = async (req: Request, res: Response) => {
+  try {
+    const userId: string = req.params.userId;
+    const { roles } = req.body;
+    const updatedRoles = await addRolesToUser(userId, roles);
+    return res.status(200).json({ success: true, roles: updatedRoles });
+  } catch (error: any) {
+    return res.status(400).json({ success: false, message: error.message });
   }
 };
 
 export const logoutController = async (req: Request, res: Response) => {
-  try {
-    const result = await logoutUser(req);
-    return res.status(result.status).json(result.body);
-  } catch (error: any) {
-    return res.status(500).json({ success: false, message: "Server error" });
-  }
+  const result = await logoutUser();
+  return res.status(200).json({ success: true, message: result.message });
 };
